@@ -13,6 +13,11 @@ app = Flask(__name__, template_folder="html")
 key = os.getenv('GMAP_KEY')
 data_path = os.getenv('DATA_PATH')
 
+df = pd.read_csv(data_path)
+    
+public_stations = df[df['Groups With Access Code'].str.contains('Public', na=False)]
+public_stations = public_stations[['Station Name', 'Address', 'Latitude','Longitude','EV Connector Types']]      
+
 def convert_seconds_to_hms(seconds):
   hours = seconds // 3600
   seconds %= 3600
@@ -37,14 +42,9 @@ def home():
 @app.route("/find", methods=['POST'])
 def find():
     if request.method == 'POST':
-        location = request.form["location"]
+        
         s_lng = request.form["lng"]
         s_lat = request.form["lat"]
-
-        file_path = ''
-        df = pd.read_csv(data_path)
-    
-        public_stations = df[df['Groups With Access Code'].str.contains('Public', na=False)]
 
         # Example user input for their current location (s_lat, s_lng)
         user_location = (float(s_lat), float(s_lng))  # Example: Downtown Los Angeles, CA
@@ -61,12 +61,7 @@ def find():
         # Sort the dataframe by the new 'Distance' column to find the nearest station
         nearest_stations = public_stations.sort_values(by='Distance')
 
-        # Display the top 5 nearest stations
-        nearest_stations[['Station Name', 'Street Address', 'City', 'State', 'ZIP', 'Latitude','Longitude','Distance']].head(5)
-
-        res = nearest_stations[['Station Name', 'Street Address', 'City', 'State', 'ZIP', 'Latitude','Longitude']].head(5)
-        res['Address'] = nearest_stations.apply(lambda row: f"{row['Street Address']}, {row['City']}, {row['State']} {row['ZIP']}", axis=1)
-        res = res.drop(columns=['Street Address', 'City', 'State', 'ZIP'])
+        res = nearest_stations.head(5)
         res = res.reset_index(drop=True)
 
         lat_lng_list = res[['Latitude', 'Longitude']].itertuples(index=False, name=None)

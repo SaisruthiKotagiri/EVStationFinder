@@ -89,7 +89,7 @@
             font-weight: bold;
             text-align: right;
         }
-
+ 
         .station-distance {
             font-size: 16px;
             color: #444;
@@ -126,6 +126,13 @@
                 width: 90%;
             }
         }
+
+        .station-connectors {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+
     </style>
 </head>
 
@@ -137,6 +144,7 @@
             <div class="station-details">
                 <div class="station-name">{{ station['Station Name'] }}</div>
                 <div class="station-address">{{ station['Address'] }}</div>
+                <div class="station-connectors">Connector-type: {{ station['EV Connector Types'] }}</div>
             </div>
             <div>
                 <div class="station-duration">{{ station['Duration'] }}</div>
@@ -151,5 +159,4 @@
         {% endfor %}
     </div>
 </body>
-
 </html>
